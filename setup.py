@@ -1,10 +1,8 @@
 from setuptools import Extension, setup
-import numpy as np
 
 module = Extension(
     "symnmf",
-    sources=["symnmfmodule.c", "symnmf.c"], 
-    include_dirs=[np.get_include()]          
+    sources=["symnmfmodule.c", "symnmf.c"]       
 )
 
 setup(
