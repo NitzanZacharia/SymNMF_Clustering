@@ -19,19 +19,22 @@ def m_val(norm_matrix): #ok in PY? part of init H...
 
  #assuming str (user's input) is correct as stated on the assignment - double check   
 def ex_funcs(str, p_matrix, n, k):
-    a_mat = symnmf.sym(p_matrix)
-    if str == "sym":
-        return a_mat
-    d_mat = symnmf.ddg(p_matrix)    
-    if str == "ddg":
-        return d_mat
-    norm_mat = symnmf.norm(p_matrix)    
-    if str == "norm":
-        return norm_mat
-    m =  m_val(norm_mat)
-    h_in = init_h(n, k, m)
-    h_mat = ex_symnmf(h_in, norm_mat, n, k)  
-    return h_mat 
+    match str:
+        case "sym":
+            a_mat = symnmf.sym(p_matrix)
+            return a_mat
+        case "ddg":
+            d_mat = symnmf.ddg(p_matrix)
+            return d_mat
+        case "norm":
+            norm_mat = symnmf.norm(p_matrix)
+            return norm_mat
+        case _:
+            norm_mat = symnmf.norm(p_matrix)        
+            m =  m_val(norm_mat)
+            h_in = init_h(n, k, m)
+            h_mat = ex_symnmf(h_in, norm_mat, n, k)  
+            return h_mat 
 
 #***
 #NITS - slight chance all ex funcs but ex_ddg are redundant, keeping them for now to handle changes in array shape if needed -XOXO
@@ -60,7 +63,7 @@ def ex_norm(d_matrix, a_matrix, n):
 def ex_symnmf(h_matrix, norm_matrix, n, k):
     h_flat = h_matrix.flatten()
     norm_flat = norm_matrix.flatten()
-    res_flat = symnmf.symnmf(h_flat, norm_flat, n, k)  
+    res_flat = symnmf.symnmf(h_flat, norm_flat, n, k)  #NITS - as discussed on this one i pass args as flat 1D and expect flat 1D back - if it makes it harder and not easier just lmk
     res_mat = res_flat.reshape(n, n)
     return res_mat
 
@@ -73,5 +76,5 @@ def main():
     file = pd.read_csv(filename, header=None)
     points = file.to_numpy()
     n = points.shape[0]
-    d = points.shape[1]
-    res_mat = ex_funcs(goal, points, n, d, k)
+    #d = points.shape[1]
+    res_mat = ex_funcs(goal, points, n, k)
