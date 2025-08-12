@@ -74,9 +74,11 @@ def main():
     filename = args[3]
 
     file = pd.read_csv(filename, header=None)
-    points = file.to_numpy()
-    n = points.shape[0]
+    points_arr = file.to_numpy()
+    n = points_arr.shape[0]
+    points = points_arr.tolist()
     #d = points.shape[1]
-    res_mat = ex_funcs(goal, points, n, k)
+    res = ex_funcs(goal, points, n, k)
+    res_mat = np.array(res)
     for row in res_mat:
         print(', '.join(f"{val:.4f}" for val in row))
