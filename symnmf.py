@@ -12,8 +12,8 @@ def init_h(n, k, m):
         size=(n, k)
     )
 def m_val(norm_matrix): #ok in PY? part of init H...
-    norm_mat = np.array(norm_matrix)
-    m = np.mean(norm_mat)
+    #norm_mat = np.array(norm_matrix)
+    m = np.mean(norm_matrix)
     return m
 
 
