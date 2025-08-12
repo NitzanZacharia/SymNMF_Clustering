@@ -167,7 +167,7 @@ double *build_a(const double *p_matrix, int n, int d) //p=flattened 1D arr of si
             a[i * n + j] = sym_v; 
             a[j * n + i] = sym_v; //a is  symmetric duh
         } 
-        a[i * n + i] = 1.0;  //diag is all 1's (e**0)
+        a[i * n + i] = 0.0;  //diag is all 0's 
     }  
     return a;      
     
