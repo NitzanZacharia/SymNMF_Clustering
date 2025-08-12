@@ -92,34 +92,25 @@ end: if(w_matrix) free(w_matrix);
 static PyObject* symnmf(PyObject *self, PyObject *args){}
 static PyObject* sym(PyObject *self, PyObject *args){
     PyObject *py_datapoints, *py_matrix;
-    if(!PyArg_ParseTuple(args, "O", &py_datapoints)){
-        PyErr_SetString(PyExc_ValueError, "Invalid args!");
-        return NULL;
-    }
+    if(!PyArg_ParseTuple(args, "O", &py_datapoints)) return NULL;
     py_matrix = shared_work(py_datapoints, 0);
-    if(!py_matrix) PyErr_SetString(PyExc_ValueError, "An Error Has Occured");
+    if(!py_matrix) PyErr_SetString(PyExc_RuntimeError, "An Error Has Occurred.");
     return py_matrix;
 }
 
 static PyObject* ddg(PyObject *self, PyObject *args){
     PyObject *py_datapoints, *py_matrix;
-    if(!PyArg_ParseTuple(args, "O", &py_datapoints)){
-        PyErr_SetString(PyExc_ValueError, "Invalid args!");
-        return NULL;
-    }
+    if(!PyArg_ParseTuple(args, "O", &py_datapoints)) return NULL;
     py_matrix = shared_work(py_datapoints, 1);
-    if(!py_matrix) PyErr_SetString(PyExc_ValueError, "An Error Has Occured");
+    if(!py_matrix) PyErr_SetString(PyExc_RuntimeError, "An Error Has Occurred.");
     return py_matrix;
 }
 
 static PyObject* norm(PyObject *self, PyObject *args){
     PyObject *py_datapoints, *py_matrix;
-    if(!PyArg_ParseTuple(args, "O", &py_datapoints)){
-        PyErr_SetString(PyExc_ValueError, "Invalid args!");
-        return NULL;
-    }
+    if(!PyArg_ParseTuple(args, "O", &py_datapoints)) return NULL;
     py_matrix = shared_work(py_datapoints, 2);
-    if(!py_matrix) PyErr_SetString(PyExc_ValueError, "An Error Has Occured");
+    if(!py_matrix) PyErr_SetString(PyExc_RuntimeError, "An Error Has Occurred.");
     return py_matrix;
 }
 
