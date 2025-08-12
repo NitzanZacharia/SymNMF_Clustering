@@ -30,7 +30,8 @@ def ex_funcs(str, p_matrix, n, k):
             norm_mat = symnmf.norm(p_matrix)
             return norm_mat
         case _:
-            norm_mat = symnmf.norm(p_matrix)        
+            norm = symnmf.norm(p_matrix)
+            norm_mat = np.array(norm)       
             m =  m_val(norm_mat)
             h_in = init_h(n, k, m)
             h_mat = ex_symnmf(h_in, norm_mat, n, k)  
