@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <math.h>
+#include "symnmf.h"
 
 #define BETA 0.5
 #define EPSILON 1e-4
@@ -175,14 +176,14 @@ double *build_d(const double *a_matrix, int n) //a_matrix= sym matrix as flatten
 {
     int i, j;
     double d_i;
-    double *d = calloc((size_t)n*n, sizeof(double));
+    double *d = malloc((size_t)n*sizeof(double));
     if(!d) return NULL;
     for(i=0; i<n;i++){
         d_i = 0.0;
         for(j=0;j<n;j++){ 
-            d_i+=a_matrix[i * n + j];
+            d_i+=a_matrix[(i*n) + j];
         } 
-        d[i*n + i] = d_i;  
+        d[i] = d_i;  
     }  
     return d;
 }
