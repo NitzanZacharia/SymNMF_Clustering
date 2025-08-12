@@ -78,3 +78,5 @@ def main():
     n = points.shape[0]
     #d = points.shape[1]
     res_mat = ex_funcs(goal, points, n, k)
+    for row in res_mat:
+        print(', '.join(f"{val:.4f}" for val in row))
