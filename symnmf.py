@@ -18,14 +18,14 @@ def m_val(norm_matrix): #ok in PY? part of init H...
 
 
  #assuming str (user's input) is correct as stated on the assignment - double check   
-def ex_funcs(str, p_matrix, n, d, k):
-    a_mat = ex_sym(p_matrix, n, d)
+def ex_funcs(str, p_matrix, n, k):
+    a_mat = symnmf.sym(p_matrix)
     if str == "sym":
         return a_mat
-    d_mat = ex_ddg(a_mat, n)     
+    d_mat = symnmf.ddg(p_matrix)    
     if str == "ddg":
         return d_mat
-    norm_mat = ex_norm(d_mat, a_mat, n)    
+    norm_mat = symnmf.norm(p_matrix)    
     if str == "norm":
         return norm_mat
     m =  m_val(norm_mat)
@@ -36,7 +36,8 @@ def ex_funcs(str, p_matrix, n, d, k):
 #***
 #NITS - slight chance all ex funcs but ex_ddg are redundant, keeping them for now to handle changes in array shape if needed -XOXO
 #****
-
+'''
+fuck my dumbass
 def ex_sym(p_matrix, n, d): # p_matrix is init_p (make sure to flatten), n is num points and d is dim 
     p_mat_flat = p_matrix.flatten()
     a_mat_flat = symnmf.sym(p_mat_flat, n, d) #asumming returned mat is 1D flattened np array - check with nits
@@ -55,7 +56,7 @@ def ex_norm(d_matrix, a_matrix, n):
     norm_matrix_flat = symnmf.norm(d_vec, a_mat_flat, n)
     norm_matrix = norm_matrix_flat.reshape(n, n)
     return norm_matrix
-
+'''
 def ex_symnmf(h_matrix, norm_matrix, n, k):
     h_flat = h_matrix.flatten()
     norm_flat = norm_matrix.flatten()
