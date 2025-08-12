@@ -120,3 +120,69 @@ double *build_w(const double *d_matrix, const double *a_matrix, int n){
     }
     return w;
 }
+// NITS - the comments are for myself as i tend to forget shit in the speed of light - do not worry my dear the formal ones will be wayyyy beter XOXO
+double sym_val(const double *point1, const double *point2, int d) // if points saved as dynamic array, else - below
+{   
+    int i;
+    double e_exponent=0.0, sum=0.0;
+    double temp;
+    
+    for(i=0; i<d; i++){
+       temp =  point1[i] - point2[i];
+       sum += pow(temp,2);
+    }
+    e_exponent = (-0.5)*sum;
+    return (exp(e_exponent));
+}
+
+
+/* else (+add struct cord def): 
+double sym_val(struct cord *point1, struct cord *point2) 
+{   
+    double e_exponent=0.0, sum=0.0;
+    double temp;
+    
+    while(point1 != NULL&& point2 != NULL){
+       temp =  point1->value - point2->value;
+       sum += pow(temp,2);
+       point1 = point1->next; 
+       point2 = point2->next;
+
+    }
+    e_exponent = (-0.5)*sum;
+    return (exp(e_exponent));
+}
+*/
+//#define d after first point was read ?
+double *build_a(const double *p_matrix, int n, int d) //p=flattened 1D arr of size n*d (n points, of dim d each)
+{
+    int i, j;
+    double sym_v;
+    double *a = malloc((size_t)n*n*sizeof(double));
+    if(!a) return NULL;
+    for(i=0; i<n;i++){
+        for(j=0;j<i;j++){ //calc sym v only under the diag
+            sym_v = sym_val(&p_matrix[i * d], &p_matrix[j * d], d); 
+            a[i * n + j] = sym_v; 
+            a[j * n + i] = sym_v; //a is  symmetric duh
+        } 
+        a[i * n + i] = 1.0;  //diag is all 1's (e**0)
+    }  
+    return a;      
+    
+}
+double *build_d(const double *a_matrix, int n) //a_matrix= sym matrix as flattened 1D arr of size n*n 
+{
+    int i, j;
+    double d_i;
+    double *d = calloc((size_t)n*n, sizeof(double));
+    if(!d) return NULL;
+    for(i=0; i<n;i++){
+        d_i = 0.0;
+        for(j=0;j<n;j++){ 
+            d_i+=a_matrix[i * n + j];
+        } 
+        d[i*n + i] = d_i;  
+    }  
+    return d;
+}
