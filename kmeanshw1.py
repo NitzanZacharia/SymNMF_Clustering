@@ -26,12 +26,15 @@ def update_center(clusters):
             up_center.append(s/len(cluster))
         centers.append(up_center)
     return centers    
-
+#*********MODIFIED*********
+# ****now  returns a tupple of clusters, cluts_id= list of indexes of the clusters each point was assigned to
 #given the current centroids and the points, sorts the points
 #to their closest centroid 
 def sort_points(points, centroids):
     clusters = [[] for i in range(len(centroids))]
-    for point in points:
+    clusts_ind = [] #added
+    for p_ind in range(len(points)): #changed - loop by ind
+        point = points[p_ind] #added
         minDist = math.inf
         centIdx = len(centroids)
         for i in range(len(centroids)):
@@ -41,7 +44,8 @@ def sort_points(points, centroids):
                 minDist = dist
                 centIdx = i
         clusters[centIdx].append(point)
-    return clusters
+        clusts_ind.append(centIdx) #added
+    return clusters, clusts_ind #changed - return tuple
 
 #checks if the centroids converged enough
 def e_convergence(prev_ctr, up_ctr):
@@ -95,14 +99,15 @@ def final_clusters(points_arr, k):
     points = points_arr.tolist()
     centroids = [points[i] for i in range(k)]
     for i in range(400): #default iter is 400
-            clusters = sort_points(points, centroids)
+            clusters, clusters_indexs = sort_points(points, centroids)
             new_cents = update_center(clusters)
             if e_convergence(centroids, new_cents):
                 break
             centroids = new_cents
     final_cents = np.array(centroids)
     final_clusts = np.array(clusters)
-    return final_cents, final_clusts            
+    final_clusters_indexs = np.array(clusters_indexs)
+    return final_cents, final_clusts, final_clusters_indexs #maybe just nee the last val in tuple?            
 
 def main():
     try:
