@@ -2,7 +2,16 @@ import numpy as np
 import pandas as pd
 import sys
 import symnmf
+from sklearn.metrics import silhouette_score
 #import kmeansapp?
+
+def get_points(f_name): #gets file name, returns a tuple of (X, n, d) when X=2D numpy array of data points, n = num of points, d = dim of points
+    dfp = pd.read_csv(f_name, header=None)
+    points= dfp.to_numpy()
+    num_p = points.shape[0]
+    dim_p = points.shape[1]
+    return points, num_p, dim_p
+'''
 def aDist(points, clust_ind, p_ind, d)
 {
     c_id = clust_ind[p_ind] #ind of the cluster p is in
@@ -21,20 +30,22 @@ def getDistance(point1, point2,d):
         diff = float(point1[i])-float(point2[i])
         dist += diff*diff
     return math.sqrt(dist) #sqrt???
+    '''
+def get_sym_culsters(goal, points_arr, n, k): #(basically manual fit_predict() ) gets goal="symnmf", n=num points, k=num clusts, points_arr=2D numpy array of the points, returns 1D vector so that cluster_ind[i] = cluster num (in range(0,k)) point i was assigned to 
+    points = points_arr.tolist()
+    res = symnmf.ex_funcs(goal, points, n, k) #gets final H as nested list
+    res_arr = np.array(res)
+    cluster_ind = np.argsmax(res_arr, axis=1) #since point that is row i match cluster in col j (in H) where H_ij is maximal
+    return cluster_ind
+
+
+
 
 def main():
     args = sys.argv
     goal = "symnmf"
     k = int(args[1])
     filename = args[2]
-    file = pd.read_csv(filename, header=None)
-    points_arr = file.to_numpy()
-    n = points_arr.shape[0]
-    d = points.shape[1]
-    points = points_arr.tolist()
-    
-    res = symnmf.ex_funcs(goal, points, n, k)
-    res_mat = np.array(res)
-    cluster_ind = np.argsmax(res_mat, axis=1) #1D vector so that cluster_ind[i] = cluster num (in range(0,k)) point i was assigned to 
-    
-    
+    X, n, d = get_points(filename)
+    Y_sym = get_sym_culsters(goal, X, n, k)
+    sym_s_score = silhouette_score(X, Y_sym)
