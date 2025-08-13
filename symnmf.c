@@ -1,5 +1,7 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
+#include <string.h>
 #include "symnmf.h"
 
 #define BETA 0.5
@@ -7,7 +9,7 @@
 #define SMALL_NUMBER 1e-13
 #define MAX_ITER 300
 
-double *transpose_matrix(const double *mat, int n, int k){
+static double *transpose_matrix(const double *mat, int n, int k){
     int i, j;
     double *mat_t = malloc((size_t)n*k*sizeof(double));
     if(!mat_t) return NULL;
@@ -19,7 +21,7 @@ double *transpose_matrix(const double *mat, int n, int k){
     return mat_t;
 }
 
-double *mat_mult(const double *matA, const double *matB, int rowsA, int cols_rows, int colsB){
+static double *mat_mult(const double *matA, const double *matB, int rowsA, int cols_rows, int colsB){
     int i, j, k;
     double sum;
     double *prod = malloc(rowsA * colsB * sizeof(double));
@@ -36,7 +38,7 @@ double *mat_mult(const double *matA, const double *matB, int rowsA, int cols_row
     return prod;
 }
 
-int check_convergence(const double *h_new, const double *h_old, int n, int k){
+static int check_convergence(const double *h_new, const double *h_old, int n, int k){
     int i, j;
     double sum = 0.0;
     for(i=0; i<n; i++){
@@ -47,7 +49,7 @@ int check_convergence(const double *h_new, const double *h_old, int n, int k){
     return sum < EPSILON;
 }
 
-double *mult_transpose(const double *mat, int n, int k){
+static double *mult_transpose(const double *mat, int n, int k){
     double *transpose, *res, *temp;
     transpose = transpose_matrix(mat, n, k);
     if(!transpose) return NULL;
@@ -62,7 +64,7 @@ double *mult_transpose(const double *mat, int n, int k){
     return res;
 }
 
-double *create_h_new(const double *old_h, const double *w_matrix, int n, int k){
+static double *create_h_new(const double *old_h, const double *w_matrix, int n, int k){
     int i, j;
     double inside;
     double *h_matrix, *mone, *mehane;
@@ -122,7 +124,7 @@ double *build_w(const double *d_matrix, const double *a_matrix, int n){
     return w;
 }
 // NITS - the comments are for myself as i tend to forget shit in the speed of light - do not worry my dear the formal ones will be wayyyy beter XOXO
-double sym_val(const double *point1, const double *point2, int d) // if points saved as dynamic array, else - below
+static double sym_val(const double *point1, const double *point2, int d) // if points saved as dynamic array, else - below
 {   
     int i;
     double e_exponent=0.0, sum=0.0;
@@ -187,3 +189,62 @@ double *build_d(const double *a_matrix, int n) //a_matrix= sym matrix as flatten
     }  
     return d;
 }
+
+static double *calc_mat(double *p_matrix, int n, int d, char *goal){
+    double *a_mat, *d_mat, *w_mat;
+    a_mat = build_a(p_matrix, n, d);
+    if(!a_mat) return NULL;
+    if(strcmp(goal, "sym")) return a_mat;
+    d_mat = build_d(a_mat, n);
+    if(!d_mat){
+        free(a_mat);
+        return NULL;
+    }
+    if(strcmp(goal, "ddg")){
+        free(a_mat);
+        return d_mat;
+    }
+    w_mat = build_w(d_mat, a_mat, n);
+    free(a_mat);
+    free(d_mat);
+    if(!w_mat) return NULL;
+    return w_mat;
+}
+
+static void print_matrix(double *mat, int numRows, int numCols){}
+
+static void get_n_d(FILE *fp, int *n, int *d){}
+
+static double *read_from_file(FILE *fp, int n, int d){
+    double *p_matrix;
+    int i, j;
+    p_matrix = malloc((size_t)n*d*sizeof(double));
+    if(!p_matrix) return NULL; 
+    //continue!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! and above funcs
+}
+
+#define BUILD_STANDALONE
+#ifdef BUILD_STANDALONE
+int main(int argc, char **argv){
+    char *in_file;
+    double *p_mat, *end_mat;
+    int n, d;
+    FILE *fp = fopen(argv[2], "r");
+    if(!fp) goto error_case;
+    get_n_d(fp, &n, &d);
+    rewind(fp);
+    p_mat = read_from_file(fp, n, d);
+    if(!p_mat) goto error_case;
+    end_mat = calc_mat(p_mat, n, d, argv[1]);
+    free(p_mat);
+    if(end_mat){
+        print_matrix(end_mat, n, n);
+        free(end_mat);
+        fclose(fp);
+        return 0;
+    }
+error_case:
+    printf("An Error Has Occurred\n");
+    if(fp) fclose(fp);
+}
+#endif
