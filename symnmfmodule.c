@@ -89,7 +89,12 @@ end: if(w_matrix) free(w_matrix);
     return py_matrix;
 }
 
-static PyObject* symnmf(PyObject *self, PyObject *args){}
+static PyObject* symnmf(PyObject *self, PyObject *args){
+    PyObject *py_h, *py_w;
+    int n,k;
+    if(!PyArg_ParseTuple(args, "OOii", &py_h, &py_w, &n, &k)) return NULL;
+}
+
 static PyObject* sym(PyObject *self, PyObject *args){
     PyObject *py_datapoints, *py_matrix;
     if(!PyArg_ParseTuple(args, "O", &py_datapoints)) return NULL;
