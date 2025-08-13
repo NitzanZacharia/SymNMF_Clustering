@@ -3,17 +3,13 @@
 
 #include "symnmf.h"
 
-double *datapoints_to_matrix(PyObject *datapoints){
-    Py_ssize_t numRows, numCols, i, j;
+double *pyobj_to_matrix(PyObject *py_mat, Py_ssize_t numRows, Py_ssize_t numCols){
     double *mat;
     PyObject *inner;
-    if ((!PyList_Check(datapoints)) || PyList_Size(datapoints) <= 0) return NULL;
-    numRows = PyList_Size(datapoints);
-    numCols = PyList_Size(PyList_GetItem(datapoints, 0));
     mat = malloc((size_t)numRows*numCols*sizeof(double));
     if(!mat) return NULL;
     for(i=0; i<numRows; i++){
-        inner = PyList_GetItem(datapoints, i);
+        inner = PyList_GetItem(py_mat, i);
         if(!PyList_Check(inner)){
             free(mat);
             return NULL;
@@ -22,6 +18,16 @@ double *datapoints_to_matrix(PyObject *datapoints){
             mat[(i*numCols) + j] = PyFloat_AsDouble(PyList_GetItem(inner, j));
         }
     }
+    return mat;
+}
+
+double *datapoints_to_matrix(PyObject *datapoints){
+    Py_ssize_t numRows, numCols;
+    double *mat;
+    if ((!PyList_Check(datapoints)) || PyList_Size(datapoints) <= 0) return NULL;
+    numRows = PyList_Size(datapoints);
+    numCols = PyList_Size(PyList_GetItem(datapoints, 0));
+    mat = pyobj_to_matrix(datapoints, numRows, numCols);
     return mat;
 }
 
@@ -90,9 +96,30 @@ end: if(w_matrix) free(w_matrix);
 }
 
 static PyObject* symnmf(PyObject *self, PyObject *args){
-    PyObject *py_h, *py_w;
+    PyObject *py_h, *py_w, *py_matrix;
     int n,k;
+    double *h_matrix, *w_matrix, *final_h;
     if(!PyArg_ParseTuple(args, "OOii", &py_h, &py_w, &n, &k)) return NULL;
+    if((!PyList_Check(py_h)) || (!PyList_Check(py_w))){
+        PyErr_SetString(PyExc_RuntimeError, "An Error Has Occurred.");
+        return NULL;
+    }
+    h_matrix = pyobj_to_matrix(py_h, n, k);
+    w_matrix = pyobj_to_matrix(py_w, n, n);
+    if((!h_matrix) || (!w_matrix)){
+        PyErr_SetString(PyExc_RuntimeError, "An Error Has Occurred.");
+        return NULL;
+    }
+    final_h = converge_h(h_matrix, w_matrix, n, k);
+    if(!final_h){
+        PyErr_SetString(PyExc_RuntimeError, "An Error Has Occurred.");
+        return NULL;
+    }
+    py_matrix = matrix_to_lists(final_h);
+    if(!py_matrix) PyErr_SetString(PyExc_RuntimeError, "An Error Has Occurred.");
+    free(w_matrix)
+    free(final_h)
+    return py_matrix;
 }
 
 static PyObject* sym(PyObject *self, PyObject *args){
