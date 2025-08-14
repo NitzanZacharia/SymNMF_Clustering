@@ -224,29 +224,22 @@ static void print_matrix(double *mat, int numRows, int numCols){
         printf("\n");   
     }
 }
+
 static void get_n_d(FILE *fp, int *n, int *d){
-    int row=0, col=0;
-    int flag=1;
+    int firstline=1;
     double p;
     char c;
+    *n=0;
+    *d=0;
     while (fscanf(fp, "%lf%c", &p, &c) == 2)
     {
-        if (c== '\n'){
-            if (flag){
-                col++;
-                flag=0;
-            }
-            row++;
-        } 
-        else{
-            if (flag){
-                col++; 
-            }
+        if(firstline) (*d)++;
+        if(c == '\n'){
+            (*n)++;
+            firstline=0;
         }
         
     }
-    *n = row;
-    *d = col;
 }
 
 static double *read_from_file(FILE *fp, int n, int d){
@@ -256,12 +249,11 @@ static double *read_from_file(FILE *fp, int n, int d){
     if(!p_matrix) return NULL; 
     for(i=0; i<n; i++){
         for(j=0;j<d;j++){
-            if(fscanf(fp, "%lf", &p_matrix[i*d+j]) != 1){
+            if(fscanf(fp, "%lf", &p_matrix[(i*d) + j]) != 1){
+                free(p_matrix);
                 return NULL;
             }
-            if (j< d-1){
-                fgetc(fp);
-            }
+            if (j< d-1) fgetc(fp);
         }
         fgetc(fp);
     }
@@ -273,11 +265,8 @@ static double *read_from_file(FILE *fp, int n, int d){
 int main(int argc, char **argv){
     double *p_mat, *end_mat;
     int n, d;
-    char *in_file;
     FILE *fp;
-    (void)argc;
-    in_file  = argv[2];
-    fp = fopen(in_file, "r");
+    fp = fopen(argv[2], "r");
     if(!fp) goto error_case;
     get_n_d(fp, &n, &d);
     rewind(fp);
@@ -294,6 +283,6 @@ int main(int argc, char **argv){
 error_case:
     printf("An Error Has Occurred\n");
     if(fp) fclose(fp);
-return 1;
+    return 1;
 }
 #endif
