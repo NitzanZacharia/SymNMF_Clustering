@@ -8,7 +8,7 @@ symnmf.o: symnmf.c
 	$(CC) -c symnmf.c $(CFLAGS)
 
 symnmfmodule.o: symnmfmodule.c
-	$(CC) -c symnmf.c $(CFLAGS)
+	$(CC) -c symnmfmodule.c $(CFLAGS)
 		
 clean:
 	rm -f *o
