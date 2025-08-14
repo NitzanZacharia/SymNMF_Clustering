@@ -224,6 +224,7 @@ static void print_matrix(double *mat, int numRows, int numCols){
         } 
         printf("\n");   
     }
+    return NULL;
 }
 static void get_n_d(FILE *fp, int *n, int *d){
     int row=0, col=0;
@@ -248,6 +249,7 @@ static void get_n_d(FILE *fp, int *n, int *d){
     }
     *n = row;
     *d = col;
+    return NULL;
 }
 
 static double *read_from_file(FILE *fp, int n, int d){
@@ -269,7 +271,7 @@ static double *read_from_file(FILE *fp, int n, int d){
     return p_matrix;
 }
 
-#define BUILD_STANDALONE
+/* #define BUILD_STANDALONE*/
 #ifdef BUILD_STANDALONE
 int main(int argc, char **argv){
     char *in_file;
@@ -292,5 +294,6 @@ int main(int argc, char **argv){
 error_case:
     printf("An Error Has Occurred\n");
     if(fp) fclose(fp);
+return 1;
 }
 #endif
