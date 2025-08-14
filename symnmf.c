@@ -212,7 +212,6 @@ static double *calc_mat(double *p_matrix, int n, int d, char *goal){
 }
 
 static void print_matrix(double *mat, int numRows, int numCols){
-    int cnt = 0;
     int i, j;
     for(i=0; i<numRows;i++){
         for(j=0;j<numCols;j++){ 
@@ -224,7 +223,6 @@ static void print_matrix(double *mat, int numRows, int numCols){
         } 
         printf("\n");   
     }
-    return NULL;
 }
 static void get_n_d(FILE *fp, int *n, int *d){
     int row=0, col=0;
@@ -249,7 +247,6 @@ static void get_n_d(FILE *fp, int *n, int *d){
     }
     *n = row;
     *d = col;
-    return NULL;
 }
 
 static double *read_from_file(FILE *fp, int n, int d){
