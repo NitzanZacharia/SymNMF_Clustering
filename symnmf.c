@@ -190,17 +190,19 @@ double *build_d(const double *a_matrix, int n) /*a_matrix= sym matrix as flatten
     return d;
 }
 
+/* #define BUILD_STANDALONE*/
+#ifdef BUILD_STANDALONE
 static double *calc_mat(double *p_matrix, int n, int d, char *goal){
     double *a_mat, *d_mat, *w_mat;
     a_mat = build_a(p_matrix, n, d);
     if(!a_mat) return NULL;
-    if(strcmp(goal, "sym")) return a_mat;
+    if(strcmp(goal, "sym") == 0) return a_mat;
     d_mat = build_d(a_mat, n);
     if(!d_mat){
         free(a_mat);
         return NULL;
     }
-    if(strcmp(goal, "ddg")){
+    if(strcmp(goal, "ddg") == 0){
         free(a_mat);
         return d_mat;
     }
@@ -220,6 +222,18 @@ static void print_matrix(double *mat, int numRows, int numCols){
             {
                 printf(",");
             }
+        } 
+        printf("\n");   
+    }
+}
+
+static void print_d(double *d_mat, int n){
+    int i, j;
+    for(i=0; i<n;i++){
+        for(j=0;j<n;j++){ 
+            if(i==j) printf("%.4f",d_mat[i]);
+            else printf("0.0000");
+            if (j<n-1) printf(",");
         } 
         printf("\n");   
     }
@@ -260,12 +274,11 @@ static double *read_from_file(FILE *fp, int n, int d){
     return p_matrix;
 }
 
-/* #define BUILD_STANDALONE*/
-#ifdef BUILD_STANDALONE
 int main(int argc, char **argv){
     double *p_mat, *end_mat;
     int n, d;
     FILE *fp;
+    (void)argc;
     fp = fopen(argv[2], "r");
     if(!fp) goto error_case;
     get_n_d(fp, &n, &d);
@@ -275,7 +288,8 @@ int main(int argc, char **argv){
     end_mat = calc_mat(p_mat, n, d, argv[1]);
     free(p_mat);
     if(end_mat){
-        print_matrix(end_mat, n, n);
+        if(strcmp(argv[1], "ddg") == 0) print_d(end_mat, n);
+        else print_matrix(end_mat, n, n);
         free(end_mat);
         fclose(fp);
         return 0;

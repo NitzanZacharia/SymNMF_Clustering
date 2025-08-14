@@ -74,12 +74,22 @@ def ex_norm(d_matrix, a_matrix, n):
 #     res_mat = res_flat.reshape(n, n)
 #     return res_mat
 
+def print_d(mat, n):
+    for i in range(n):
+        for j in range(n):
+            if i == j:
+                print(f"{mat[i]:.4f}", end="")
+            else:
+                print("0.0000", end="")
+            if j < n - 1:
+                print(",", end="")
+        print()  
+
 def main():
     args = sys.argv
     k = int(args[1])
     goal = args[2]
     filename = args[3]
-
     file = pd.read_csv(filename, header=None)
     points_arr = file.to_numpy()
     n = points_arr.shape[0]
@@ -89,5 +99,11 @@ def main():
     if res is None:
         return
     res_mat = np.array(res)
-    for row in res_mat:
-        print(', '.join(f"{val:.4f}" for val in row))
+    if(goal == "ddg"):
+        print_d(res_mat, n)
+    else:
+        for row in res_mat:
+            print(','.join(f"{val:.4f}" for val in row))
+
+if __name__ == "__main__":
+    main()

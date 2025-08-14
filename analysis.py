@@ -34,7 +34,11 @@ def getDistance(point1, point2,d):
     '''
 def get_sym_culsters(goal, points_arr, n, k): #(basically manual fit_predict() ) gets goal="symnmf", n=num points, k=num clusts, points_arr=2D numpy array of the points, returns 1D vector so that cluster_ind[i] = cluster num (in range(0,k)) point i was assigned to 
     points = points_arr.tolist()
+    # w_matrix = symnmf.norm(points)
     res = symnmf.ex_funcs(goal, points, n, k) #gets final H as nested list
+    # m =  symnmf.m_val(w_matrix)
+    # h_in = symnmf.init_h(n, k, m)
+    # res = symnmf.symnmf(h_in.tolist(), w_matrix, n, k)
     res_arr = np.array(res)
     cluster_ind = np.argsmax(res_arr, axis=1) #since point that is row i match cluster in col j (in H) where H_ij is maximal
     return cluster_ind
@@ -57,7 +61,7 @@ def main():
         kmeans_s_score = silhouette_score(X, Y_kmeans)
         print(f"nmf: {sym_s_score:.4f}")
         print(f"kmeans: {kmeans_s_score:.4f}")
-    except:
+    except Exception as e:
         print("An Error Has Occured")
 if __name__ == "__main__":
     main()    

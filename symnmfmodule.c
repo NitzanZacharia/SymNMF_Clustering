@@ -118,8 +118,7 @@ static PyObject* symnmf(PyObject *self, PyObject *args){
     }
     py_matrix = matrix_to_lists(final_h, n, k);
     if(!py_matrix) PyErr_SetString(PyExc_RuntimeError, "An Error Has Occurred.");
-end: free(h_matrix);
-    free(w_matrix);
+end: free(w_matrix);
     free(final_h);
     return py_matrix;
 }
