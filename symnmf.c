@@ -273,8 +273,9 @@ static double *read_from_file(FILE *fp, int n, int d){
 int main(int argc, char **argv){
     double *p_mat, *end_mat;
     int n, d;
-    (void)argc;
     char *in_file;
+    FILE *fp;
+    (void)argc;
     in_file  = argv[2];
     FILE *fp = fopen(in_file, "r");
     if(!fp) goto error_case;
