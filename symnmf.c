@@ -225,7 +225,30 @@ static void print_matrix(double *mat, int numRows, int numCols){
         printf("\n");   
     }
 }
-static void get_n_d(FILE *fp, int *n, int *d){}
+static void get_n_d(FILE *fp, int *n, int *d){
+    int row=0, col=0;
+    int flag=1;
+    double p;
+    char c;
+    while (fscanf(fp, "%lf%c", &p, &c) == 2)
+    {
+        if (c== '\n'){
+            if (flag){
+                col++;
+                flag=0;
+            }
+            row++;
+        } 
+        else{
+            if (flag){
+                col++; 
+            }
+        }
+        
+    }
+    *n = row;
+    *d = col;
+}
 
 static double *read_from_file(FILE *fp, int n, int d){
     double *p_matrix;
