@@ -255,7 +255,18 @@ static double *read_from_file(FILE *fp, int n, int d){
     int i, j;
     p_matrix = malloc((size_t)n*d*sizeof(double));
     if(!p_matrix) return NULL; 
-    /* continue!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! and above funcs*/
+    for(i=0; i<n; i++){
+        for(j=0;j<d;j++){
+            if(fscanf(fp, "%lf", &p_matrix[i*d+j]) != 1){
+                return NULL;
+            }
+            if (j< d-1){
+                fgetc(fp);
+            }
+        }
+        fgetc(fp);
+    }
+    return p_matrix;
 }
 
 #define BUILD_STANDALONE
