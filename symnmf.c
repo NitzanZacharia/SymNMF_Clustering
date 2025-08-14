@@ -277,7 +277,7 @@ int main(int argc, char **argv){
     FILE *fp;
     (void)argc;
     in_file  = argv[2];
-    FILE *fp = fopen(in_file, "r");
+    fp = fopen(in_file, "r");
     if(!fp) goto error_case;
     get_n_d(fp, &n, &d);
     rewind(fp);
