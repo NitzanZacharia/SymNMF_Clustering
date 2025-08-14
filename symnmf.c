@@ -274,7 +274,8 @@ int main(int argc, char **argv){
     double *p_mat, *end_mat;
     int n, d;
     (void)argc;
-    char *in_file = argv[2];
+    char *in_file;
+    in_file  = argv[2];
     FILE *fp = fopen(in_file, "r");
     if(!fp) goto error_case;
     get_n_d(fp, &n, &d);
