@@ -271,10 +271,11 @@ static double *read_from_file(FILE *fp, int n, int d){
 /* #define BUILD_STANDALONE*/
 #ifdef BUILD_STANDALONE
 int main(int argc, char **argv){
-    char *in_file;
     double *p_mat, *end_mat;
     int n, d;
-    FILE *fp = fopen(argv[2], "r");
+    (void)argc;
+    char *in_file = argv[2];
+    FILE *fp = fopen(in_file, "r");
     if(!fp) goto error_case;
     get_n_d(fp, &n, &d);
     rewind(fp);
