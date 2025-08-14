@@ -123,8 +123,8 @@ double *build_w(const double *d_matrix, const double *a_matrix, int n){
     }
     return w;
 }
-// NITS - the comments are for myself as i tend to forget shit in the speed of light - do not worry my dear the formal ones will be wayyyy beter XOXO
-static double sym_val(const double *point1, const double *point2, int d) // if points saved as dynamic array, else - below
+/* NITS - the comments are for myself as i tend to forget shit in the speed of light - do not worry my dear the formal ones will be wayyyy beter XOXO */
+static double sym_val(const double *point1, const double *point2, int d) /* if points saved as dynamic array, else - below*/
 {   
     int i;
     double e_exponent=0.0, sum=0.0;
@@ -156,25 +156,25 @@ double sym_val(struct cord *point1, struct cord *point2)
     return (exp(e_exponent));
 }
 */
-//#define d after first point was read ?
-double *build_a(const double *p_matrix, int n, int d) //p=flattened 1D arr of size n*d (n points, of dim d each)
+/* #define d after first point was read ? */
+double *build_a(const double *p_matrix, int n, int d) /*p=flattened 1D arr of size n*d (n points, of dim d each)*/
 {
     int i, j;
     double sym_v;
     double *a = malloc((size_t)n*n*sizeof(double));
     if(!a) return NULL;
     for(i=0; i<n;i++){
-        for(j=0;j<i;j++){ //calc sym v only under the diag
+        for(j=0;j<i;j++){ /*calc sym v only under the diag*/
             sym_v = sym_val(&p_matrix[i * d], &p_matrix[j * d], d); 
             a[i * n + j] = sym_v; 
-            a[j * n + i] = sym_v; //a is  symmetric duh
+            a[j * n + i] = sym_v; /*a is  symmetric duh*/
         } 
-        a[i * n + i] = 0.0;  //diag is all 0's 
+        a[i * n + i] = 0.0;  /*diag is all 0's */
     }  
     return a;      
     
 }
-double *build_d(const double *a_matrix, int n) //a_matrix= sym matrix as flattened 1D arr of size n*n 
+double *build_d(const double *a_matrix, int n) /*a_matrix= sym matrix as flattened 1D arr of size n*n  */
 {
     int i, j;
     double d_i;
@@ -211,8 +211,20 @@ static double *calc_mat(double *p_matrix, int n, int d, char *goal){
     return w_mat;
 }
 
-static void print_matrix(double *mat, int numRows, int numCols){}
-
+static void print_matrix(double *mat, int numRows, int numCols){
+    int cnt = 0;
+    int i, j;
+    for(i=0; i<numRows;i++){
+        for(j=0;j<numCols;j++){ 
+            printf("%.4f",mat[(i*numCols) + j]);
+            if (j<numCols-1)
+            {
+                printf(",");
+            }
+        } 
+        printf("\n");   
+    }
+}
 static void get_n_d(FILE *fp, int *n, int *d){}
 
 static double *read_from_file(FILE *fp, int n, int d){
@@ -220,7 +232,7 @@ static double *read_from_file(FILE *fp, int n, int d){
     int i, j;
     p_matrix = malloc((size_t)n*d*sizeof(double));
     if(!p_matrix) return NULL; 
-    //continue!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! and above funcs
+    /* continue!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! and above funcs*/
 }
 
 #define BUILD_STANDALONE
