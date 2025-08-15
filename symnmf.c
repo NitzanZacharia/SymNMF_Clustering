@@ -123,9 +123,8 @@ double *build_w(const double *d_matrix, const double *a_matrix, int n){
     }
     return w;
 }
-/* NITS - the comments are for myself as i tend to forget shit in the speed of light - do not worry my dear the formal ones will be wayyyy beter XOXO */
-static double sym_val(const double *point1, const double *point2, int d) /* if points saved as dynamic array, else - below*/
-{   
+
+static double sym_val(const double *point1, const double *point2, int d){   
     int i;
     double e_exponent=0.0, sum=0.0;
     double temp;
@@ -138,27 +137,8 @@ static double sym_val(const double *point1, const double *point2, int d) /* if p
     return (exp(e_exponent));
 }
 
-
-/* else (+add struct cord def): 
-double sym_val(struct cord *point1, struct cord *point2) 
-{   
-    double e_exponent=0.0, sum=0.0;
-    double temp;
-    
-    while(point1 != NULL&& point2 != NULL){
-       temp =  point1->value - point2->value;
-       sum += pow(temp,2);
-       point1 = point1->next; 
-       point2 = point2->next;
-
-    }
-    e_exponent = (-0.5)*sum;
-    return (exp(e_exponent));
-}
-*/
-/* #define d after first point was read ? */
-double *build_a(const double *p_matrix, int n, int d) /*p=flattened 1D arr of size n*d (n points, of dim d each)*/
-{
+/*p=flattened 1D arr of size n*d (n points, of dim d each)*/
+double *build_a(const double *p_matrix, int n, int d){
     int i, j;
     double sym_v;
     double *a = malloc((size_t)n*n*sizeof(double));
@@ -166,15 +146,16 @@ double *build_a(const double *p_matrix, int n, int d) /*p=flattened 1D arr of si
     for(i=0; i<n;i++){
         for(j=0;j<i;j++){ /*calc sym v only under the diag*/
             sym_v = sym_val(&p_matrix[i * d], &p_matrix[j * d], d); 
-            a[i * n + j] = sym_v; 
-            a[j * n + i] = sym_v; /*a is  symmetric duh*/
+            a[(i*n) + j] = sym_v; 
+            a[(j*n) + i] = sym_v; /*a is symmetric*/
         } 
-        a[i * n + i] = 0.0;  /*diag is all 0's */
+        a[(i*n) + i] = 0.0;  /*diag is all 0's */
     }  
     return a;      
     
 }
-double *build_d(const double *a_matrix, int n) /*a_matrix= sym matrix as flattened 1D arr of size n*n  */
+
+double *build_d(const double *a_matrix, int n)
 {
     int i, j;
     double d_i;

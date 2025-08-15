@@ -26,15 +26,15 @@ def update_center(clusters):
             up_center.append(s/len(cluster))
         centers.append(up_center)
     return centers    
-#*********MODIFIED*********
-# ****now  returns a tupple of clusters, cluts_id= list of indexes of the clusters each point was assigned to
+
+#returns a tupple of clusters, cluts_id= list of indexes of the clusters each point was assigned to
 #given the current centroids and the points, sorts the points
 #to their closest centroid 
 def sort_points(points, centroids):
     clusters = [[] for i in range(len(centroids))]
-    clusts_ind = [] #added
-    for p_ind in range(len(points)): #changed - loop by ind
-        point = points[p_ind] #added
+    clusts_ind = [] 
+    for p_ind in range(len(points)): 
+        point = points[p_ind] 
         minDist = math.inf
         centIdx = len(centroids)
         for i in range(len(centroids)):
@@ -44,8 +44,8 @@ def sort_points(points, centroids):
                 minDist = dist
                 centIdx = i
         clusters[centIdx].append(point)
-        clusts_ind.append(centIdx) #added
-    return clusters, clusts_ind #changed - return tuple
+        clusts_ind.append(centIdx) 
+    return clusters, clusts_ind 
 
 #checks if the centroids converged enough
 def e_convergence(prev_ctr, up_ctr):
@@ -86,15 +86,7 @@ def check_validation(k, n ,iter):
         print("Incorrect number of iteration!")
         return False
     return True
-'''
-#***********NEW***********
-def init_cents(points, k): #gets nested list of the points, and clust num returns cents as numpy
-    #points = points_arr.tolist()
-    init_cents = [points[i] for i in range(k)]
-    #init_cents_arr = np.array(init_cents)
-    return init_cents   
-    '''
-#***********NEW***********
+
 def final_clusters(points_arr, k):
     points = points_arr.tolist()
     centroids = [points[i] for i in range(k)]
@@ -105,7 +97,7 @@ def final_clusters(points_arr, k):
                 break
             centroids = new_cents
     final_clusters_indexs = np.array(clusters_indexs)
-    return final_clusters_indexs #maybe just nee the last val in tuple?            
+    return final_clusters_indexs            
 
 def main():
     try:

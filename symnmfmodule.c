@@ -148,26 +148,22 @@ static PyObject* norm(PyObject *self, PyObject *args){
 }
 
 static PyMethodDef symnmfMethods[] = {
-   {
-        "sym",
+   {"sym",
         (PyCFunction)sym,
         METH_VARARGS,
         PyDoc_STR()
     },
-    {
-        "ddg",
+    {"ddg",
         (PyCFunction)ddg,
         METH_VARARGS,
         PyDoc_STR()
     },
-    {
-        "norm",
+    {"norm",
         (PyCFunction)norm,
         METH_VARARGS,
         PyDoc_STR()
     },
-    {
-        "symnmf",
+    {"symnmf",
         (PyCFunction)symnmf,
         METH_VARARGS,
         PyDoc_STR()

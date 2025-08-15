@@ -68,12 +68,16 @@ if __name__ == "__main__":
         file.seek(0)  # returning to the beginning of the file
 
         X = symnmf.createDVectors(file)
-
+    
     kmeans_cluster = kmeans_clusters(K, X)  # calculating the centroids using kmeans
     symnmf_cluster = symnmf_clusters(K, X)  # calculating the centroids using symnmf
 
-    print("nmf: %.4f" % silhouette_score(X, symnmf_cluster))
-    print("kmeans: %.4f" % silhouette_score(X, kmeans_cluster))
+    try:
+        print("nmf: %.4f" % silhouette_score(X, symnmf_cluster))
+        print("kmeans: %.4f" % silhouette_score(X, kmeans_cluster))
+    except Exception as e:
+        print("An Error Has Occurred")
+        exit()
 
 
 

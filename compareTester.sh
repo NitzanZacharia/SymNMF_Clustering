@@ -7,6 +7,19 @@ YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+
+# --- Added summary counters and dual-output logging ---
+# To disable logging to file, comment the next line.
+: "${LOG_FILE:=results.log}"
+exec > >(tee "$LOG_FILE") 2>&1
+
+pass_count=0
+fail_count=0
+
+pass_msg() { echo -e "$@"; pass_count=$((pass_count+1)); }
+fail_msg() { echo -e "$@"; fail_count=$((fail_count+1)); }
+# --- End additions ---
+
 # Check and install valgrind if not present
 install_valgrind() {
     if ! command -v valgrind &> /dev/null; then
@@ -103,18 +116,18 @@ test_non_existing_file_C() {
     local output=$($symnmf_path $goal $file_name 2>&1)
 
     if [[ "$output" == *"$expected_error"* ]]; then
-        echo -e "${GREEN}Error handling test for non-existing file passed for $symnmf_path.${NC}"
+pass_msg "${GREEN}Error handling test for non-existing file passed for $symnmf_path.${NC}"
     else
-        echo -e "${RED}Error handling test for non-existing file failed for $symnmf_path.${NC}"
+fail_msg "${RED}Error handling test for non-existing file failed for $symnmf_path.${NC}"
         echo -e "${BLUE}Expected error message was not found. Actual output:${NC}\n$output"
     fi
 
     # Run valgrind to check for memory leaks in C tests in non existing files
     echo -e "${BLUE}Running valgrind for current C test case: ${YELLOW}$goal $file_name${NC}"
     if run_valgrind_c_test $symnmf_path $goal $file_name; then
-    echo -e "${GREEN}Valgrind check passed for current C test case '${YELLOW}$goal $file_name${GREEN}'.${NC}\n"
+pass_msg "${GREEN}Valgrind check passed for current C test case '${YELLOW}$goal $file_name${GREEN}'.${NC}\n"
     else
-        echo -e "${RED}Valgrind check failed for current C test case '${YELLOW}$goal $file_name${RED}'.${NC}"
+fail_msg "${RED}Valgrind check failed for current C test case '${YELLOW}$goal $file_name${RED}'.${NC}"
     fi  
 }
 
@@ -127,9 +140,9 @@ test_non_existing_file_python() {
     local output=$(python3 $symnmf_path $k $goal $file_name 2>&1)
 
     if [[ "$output" == *"$expected_error"* ]]; then
-        echo -e "${GREEN}Error handling test for non-existing file passed for $symnmf_path.${NC}"
+pass_msg "${GREEN}Error handling test for non-existing file passed for $symnmf_path.${NC}"
     else
-        echo -e "${RED}Error handling test for non-existing file failed for $symnmf_path.${NC}"
+fail_msg "${RED}Error handling test for non-existing file failed for $symnmf_path.${NC}"
         echo -e "${BLUE}Expected error message was not found. Actual output:${NC}\n$output"
     fi
 }
@@ -224,14 +237,14 @@ install_valgrind
 echo -e "${BLUE}Compiling current symnmf.py...${NC}"
 (cd $current_dir && python3 setup.py build_ext --inplace)
 if [ $? -ne 0 ]; then
-    echo -e "${RED}Compilation failed for current symnmf.py${NC}"
+fail_msg "${RED}Compilation failed for current symnmf.py${NC}"
     exit 1
 fi
 
 echo -e "${BLUE}Compiling previous symnmf.py...${NC}"
 (cd $prev_dir && python3 setup.py build_ext --inplace)
 if [ $? -ne 0 ]; then
-    echo -e "${RED}Compilation failed for previous symnmf.py${NC}"
+fail_msg "${RED}Compilation failed for previous symnmf.py${NC}"
     exit 1
 fi
 
@@ -239,14 +252,14 @@ fi
 echo -e "${BLUE}Compiling current symnmf.c...${NC}"
 (cd $current_dir && make)
 if [ $? -ne 0 ]; then
-    echo -e "${RED}Compilation failed for current symnmf.c${NC}"
+fail_msg "${RED}Compilation failed for current symnmf.c${NC}"
     exit 1
 fi
 
 echo -e "${BLUE}Compiling previous symnmf.c...${NC}"
 (cd $prev_dir && make)
 if [ $? -ne 0 ]; then
-    echo -e "${RED}Compilation failed for previous symnmf.c${NC}"
+fail_msg "${RED}Compilation failed for previous symnmf.c${NC}"
     exit 1
 fi
 
@@ -271,9 +284,9 @@ for test_case in "${test_cases[@]}"; do
 
     # Compare Python outputs
     if [ "$current_python_output" == "$prev_python_output" ]; then
-        echo -e "${GREEN}Python test case '${YELLOW}$K $goal $file_name${GREEN}' passed.${NC}\n"
+pass_msg "${GREEN}Python test case '${YELLOW}$K $goal $file_name${GREEN}' passed.${NC}\n"
     else
-        echo -e "${RED}Python test case '${YELLOW}$K $goal $file_name${RED}' failed.${NC}"
+fail_msg "${RED}Python test case '${YELLOW}$K $goal $file_name${RED}' failed.${NC}"
         echo -e "${BLUE}Current Python output:${NC}\n$current_python_output"
         echo -e "${BLUE}Previous Python output:${NC}\n$prev_python_output\n"
     fi
@@ -285,9 +298,9 @@ for test_case in "${test_cases[@]}"; do
 
         # Compare C outputs
         if [ "$current_c_output" == "$prev_c_output" ]; then
-            echo -e "${GREEN}C test case '${YELLOW}$goal $file_name${GREEN}' passed.${NC}\n"
+pass_msg "${GREEN}C test case '${YELLOW}$goal $file_name${GREEN}' passed.${NC}\n"
         else
-            echo -e "${RED}C test case '${YELLOW}$goal $file_name${RED}' failed.${NC}"
+fail_msg "${RED}C test case '${YELLOW}$goal $file_name${RED}' failed.${NC}"
             echo -e "${BLUE}Current C output:${NC}\n$current_c_output"
             echo -e "${BLUE}Previous C output:${NC}\n$prev_c_output\n"
         fi
@@ -295,9 +308,9 @@ for test_case in "${test_cases[@]}"; do
         # Run valgrind to check for memory leaks in C tests
         echo -e "${BLUE}Running valgrind for current C test case: ${YELLOW}$goal $file_name${NC}"
         if run_valgrind_c_test $current_symnmf_c_path $goal $file_name; then
-            echo -e "${GREEN}Valgrind check passed for current C test case '${YELLOW}$goal $file_name${GREEN}'.${NC}\n"
+pass_msg "${GREEN}Valgrind check passed for current C test case '${YELLOW}$goal $file_name${GREEN}'.${NC}\n"
         else
-            echo -e "${RED}Valgrind check failed for current C test case '${YELLOW}$goal $file_name${RED}'.${NC}"
+fail_msg "${RED}Valgrind check failed for current C test case '${YELLOW}$goal $file_name${RED}'.${NC}"
         fi
     fi
 
@@ -312,9 +325,9 @@ for test_case in "${test_cases[@]}"; do
 
     # Compare the outputs of analysis.py
     if [ "$current_analysis_output" == "$prev_analysis_output" ]; then
-        echo -e "${GREEN}Analysis test case '${YELLOW}$K $file_name${GREEN}' passed.${NC}\n"
+pass_msg "${GREEN}Analysis test case '${YELLOW}$K $file_name${GREEN}' passed.${NC}\n"
     else
-        echo -e "${RED}Analysis test case '${YELLOW}$K $file_name${RED}' failed.${NC}"
+fail_msg "${RED}Analysis test case '${YELLOW}$K $file_name${RED}' failed.${NC}"
         echo -e "${BLUE}Current analysis output:${NC}\n$current_analysis_output"
         echo -e "${BLUE}Previous analysis output:${NC}\n$prev_analysis_output\n"
     fi
@@ -335,6 +348,12 @@ test_non_existing_file_python $current_symnmf_path 7 "symnmf"
 
 
 # Clean up build directories and .so files
+
+echo -e "${BLUE}==============================${NC}"
+echo -e "${GREEN}Total Passed: ${YELLOW}$pass_count${NC}"
+echo -e "${RED}Total Failed: ${YELLOW}$fail_count${NC}"
+echo -e "${BLUE}==============================${NC}"
+
 echo -e "${BLUE}Cleaning up build directories and .so files...${NC}"
 (cd $current_dir && make clean)
 (cd $prev_dir && make clean)

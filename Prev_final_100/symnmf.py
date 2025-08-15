@@ -6,7 +6,7 @@ import symnmfmodule as s  # C module
 goal_list = ['symnmf', 'sym', 'ddg', 'norm']
 
 # initializing the random function
-np.random.seed(0)
+np.random.seed(1234)
 
 
 def createDVectors(file):
