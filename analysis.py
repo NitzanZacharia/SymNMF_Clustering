@@ -53,11 +53,11 @@ def main():
         X, n, d = get_points(filename)
         Y_sym = get_sym_culsters(goal, X, n, k)
         sym_s_score = silhouette_score(X, Y_sym) #silhouette score of the sym clustering
-        cents, clusts, Y_kmeans = final_clusters(X, k)
+        Y_kmeans = final_clusters(X, k)
         kmeans_s_score = silhouette_score(X, Y_kmeans)
         print(f"nmf: {sym_s_score:.4f}")
         print(f"kmeans: {kmeans_s_score:.4f}")
     except Exception as e:
-        print(f"An Error Has Occured {e}")
+        print("An Error Has Occured")
 if __name__ == "__main__":
     main()    

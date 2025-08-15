@@ -98,16 +98,14 @@ def init_cents(points, k): #gets nested list of the points, and clust num return
 def final_clusters(points_arr, k):
     points = points_arr.tolist()
     centroids = [points[i] for i in range(k)]
-    for i in range(400): #default iter is 400
+    for i in range(300): #default iter is 300
             clusters, clusters_indexs = sort_points(points, centroids)
             new_cents = update_center(clusters)
             if e_convergence(centroids, new_cents):
                 break
             centroids = new_cents
-    final_cents = np.array(centroids)
-    final_clusts = np.array(clusters)
     final_clusters_indexs = np.array(clusters_indexs)
-    return final_cents, final_clusts, final_clusters_indexs #maybe just nee the last val in tuple?            
+    return final_clusters_indexs #maybe just nee the last val in tuple?            
 
 def main():
     try:
