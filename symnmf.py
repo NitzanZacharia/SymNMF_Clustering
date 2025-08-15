@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import sys
-import symnmf
+import symnmf_c as symnmf
 
 np.random.seed(1234)
 

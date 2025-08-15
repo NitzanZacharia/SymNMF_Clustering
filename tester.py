@@ -231,20 +231,11 @@ def _anchors_for_n(n):
     return sorted(cands)
 
 def gen_k_values(n, d, rng=None):
-    """
-    Diverse integer k values with much less bias toward 2.
-    Always: integers satisfying 2 <= k < n.
-    Extra safeguards to avoid pathological slow cases:
-      - For tiny n (<=15): cap k to ~0.4*n (and at least 3)
-      - For 1D data: cap k to min(previous cap, n//3 + 2, 6)
-    """
     if n < 3: return []
     if rng is None: rng = np.random.default_rng()
 
-    # base cap to keep runtime sane
     base_kmax = min(n - 1, max(8, int(math.sqrt(n)) + 8, 14))
 
-    # tighten caps for tiny n and for 1D
     if n <= 15:
         base_kmax = min(base_kmax, max(3, int(round(0.4 * n))))
     if d == 1:
@@ -255,31 +246,32 @@ def gen_k_values(n, d, rng=None):
     if not candidates: return []
 
     anchors = _anchors_for_n(n)
-    # maybe drop '2' half the time (variety) if others exist
     if 2 in anchors and len(anchors) > 1 and rng.random() < 0.5:
         anchors.remove(2)
 
-    # weight: prefer smaller but not overwhelmingly
     weights = np.array([1.0 / (k ** 0.7) for k in candidates], dtype=float)
     weights /= weights.sum()
 
     target = min(8, max(4, n // 60 + 4))   # aim 4..8 ks
     chosen = set()
 
-    # seed with a few anchors (up to half target)
     rng.shuffle(anchors)
     for a in anchors[: max(1, target // 2)]:
         if 2 <= a < n and a in candidates:
             chosen.add(int(a))
 
-    # fill with random draws
-    while len(chosen) < target:
+    # 🔧 Add max tries safeguard
+    tries = 0
+    max_tries = 100
+    while len(chosen) < target and tries < max_tries:
         k = int(rng.choice(candidates, p=weights))
         if 2 <= k < n:
             chosen.add(k)
+        tries += 1
 
     ks = sorted({int(k) for k in chosen if 2 <= int(k) < n})
     return ks
+
 
 # ================================
 # Runner
@@ -342,16 +334,22 @@ def run_all_tests_over_inputs():
         ks_candidates = gen_k_values(n, d)
 
         for goal in GOALS:
-            ks_for_goal = ks_candidates if goal == "symnmf" else [None]  # k not used/displayed for non-symnmf
+            ks_for_goal = ks_candidates if goal == "symnmf" else [None]
 
             for k in ks_for_goal:
                 total += 1
 
-                # ---------- run your Python script as a script
-                # For sym/ddg/norm, symnmf.py requires a k arg; give 2 as dummy (valid) but output ignores it.
+                print(f"[RUN]  {os.path.basename(fpath)} goal={goal} {htag(goal,k)}", flush=True)
+
                 k_for_py = 2 if goal != "symnmf" else (k if k is not None else 2)
                 cmd_user = [sys.executable, "symnmf.py", str(int(k_for_py)), goal, fpath]
                 rc_u, out_u, err_u = run_cmd(cmd_user)
+                if rc_u == -9:
+                    failures.append((fpath, goal, k, "user_timeout", rc_u, err_u.strip()))
+                    print(f"[FAIL] {os.path.basename(fpath)} goal={goal} {htag(goal,k)}  (your script TIMEOUT)")
+                    save_mismatch(fpath, goal, k, "user_stdout", out_u)
+                    save_mismatch(fpath, goal, k, "user_stderr", err_u)
+                    continue
                 if rc_u != 0 or "An Error Has Occurred" in out_u or "An Error Has Occurred" in err_u:
                     failures.append((fpath, goal, k, "user_run_error", rc_u, err_u.strip()))
                     print(f"[FAIL] {os.path.basename(fpath)} goal={goal} {htag(goal,k)}  (your script error)")
@@ -359,10 +357,15 @@ def run_all_tests_over_inputs():
                     save_mismatch(fpath, goal, k, "user_stderr", err_u)
                     continue
 
-                # ---------- run verifier
                 k_for_ver = k_for_py
                 cmd_ver = [sys.executable, "chat_verifier.py", str(int(k_for_ver)), goal, fpath]
                 rc_v, out_v, err_v = run_cmd(cmd_ver)
+                if rc_v == -9:
+                    failures.append((fpath, goal, k, "verifier_timeout", rc_v, err_v.strip()))
+                    print(f"[FAIL] {os.path.basename(fpath)} goal={goal} {htag(goal,k)}  (verifier TIMEOUT)")
+                    save_mismatch(fpath, goal, k, "ver_stdout", out_v)
+                    save_mismatch(fpath, goal, k, "ver_stderr", err_v)
+                    continue
                 if rc_v != 0 or "An Error Has Occurred" in out_v or "An Error Has Occurred" in err_v:
                     failures.append((fpath, goal, k, "verifier_run_error", rc_v, err_v.strip()))
                     print(f"[FAIL] {os.path.basename(fpath)} goal={goal} {htag(goal,k)}  (verifier error)")
@@ -370,7 +373,6 @@ def run_all_tests_over_inputs():
                     save_mismatch(fpath, goal, k, "ver_stderr", err_v)
                     continue
 
-                # ---------- parse both
                 try:
                     _, _, A_user = parse_numeric_output(out_u)
                 except Exception as e:
@@ -387,7 +389,6 @@ def run_all_tests_over_inputs():
                     save_mismatch(fpath, goal, k, "ver_stdout_parsefail", out_v)
                     continue
 
-                # ---------- compare python vs verifier
                 ok_py_vs_ver, info = allclose_2d(A_user, A_ver, atol=ATOL)
                 if not ok_py_vs_ver:
                     kind, sha, shb, i, j, au, bv = info
@@ -399,7 +400,6 @@ def run_all_tests_over_inputs():
                     save_mismatch(fpath, goal, k, "ver_stdout", out_v)
                     continue
 
-                # ---------- For sym/ddg/norm: require CLI present and matching; missing CLI = FAIL
                 if goal in {"sym", "ddg", "norm"}:
                     if not cli_bin:
                         failures.append((fpath, goal, k, "cli_missing", "CLI ./symnmf not found"))
@@ -408,8 +408,14 @@ def run_all_tests_over_inputs():
                         save_mismatch(fpath, goal, k, "ver_stdout", out_v)
                         continue
 
-                    cmd_cli = [cli_bin, goal, fpath]  # CLI doesn't take k
+                    cmd_cli = [cli_bin, goal, fpath]
                     rc_c, out_c, err_c = run_cmd(cmd_cli)
+                    if rc_c == -9:
+                        failures.append((fpath, goal, k, "cli_timeout", rc_c, err_c.strip()))
+                        print(f"[FAIL] {os.path.basename(fpath)} goal={goal}  (CLI TIMEOUT)")
+                        save_mismatch(fpath, goal, k, "cli_stdout", out_c)
+                        save_mismatch(fpath, goal, k, "cli_stderr", err_c)
+                        continue
                     if rc_c != 0:
                         failures.append((fpath, goal, k, "cli_run_error", rc_c, err_c.strip()))
                         print(f"[FAIL] {os.path.basename(fpath)} goal={goal}  (CLI error)")
@@ -435,7 +441,7 @@ def run_all_tests_over_inputs():
                         save_mismatch(fpath, goal, k, "ver_stdout", out_v)
                         continue
 
-                print(f"[OK]   {os.path.basename(fpath)} goal={goal} {htag(goal,k)}")
+                print(f"[OK]   {os.path.basename(fpath)} goal={goal} {htag(goal,k)}", flush=True)
                 passed += 1
 
     print("\n===== SUMMARY =====")
@@ -451,7 +457,7 @@ def run_all_tests_over_inputs():
 
 def main():
     ensure_clean_dir(TEST_DIR)
-    ensure_clean_dir(FAIL_DIR)  # clear per-run
+    ensure_clean_dir(FAIL_DIR)
     print(">>> Generating randomized datasets...")
     generate_all_datasets()
     print(">>> Running tests across all goals and ks...")
