@@ -9,6 +9,14 @@
 #define SMALL_NUMBER 1e-13
 #define MAX_ITER 300
 
+/**
+ * @brief Transposes a given matrix.
+ *
+ * @param mat Input matrix (flattened).
+ * @param n Number of rows.
+ * @param k Number of columns.
+ * @return Pointer to the transposed matrix, or NULL if memory allocation fails.
+ */
 static double *transpose_matrix(const double *mat, int n, int k){
     int i, j;
     double *mat_t = malloc((size_t)n*k*sizeof(double));
@@ -21,6 +29,16 @@ static double *transpose_matrix(const double *mat, int n, int k){
     return mat_t;
 }
 
+/**
+ * @brief Multiplies two matrices.
+ *
+ * @param matA First matrix.
+ * @param matB Second matrix.
+ * @param rowsA Number of rows in matA.
+ * @param cols_rows Number of columns in matA and rows in matB.
+ * @param colsB Number of columns in matB.
+ * @return A pointer to product matrix, or NULL if memory allocation fails.
+ */
 static double *mat_mult(const double *matA, const double *matB, int rowsA, int cols_rows, int colsB){
     int i, j, k;
     double sum;
@@ -38,6 +56,15 @@ static double *mat_mult(const double *matA, const double *matB, int rowsA, int c
     return prod;
 }
 
+/**
+ * @brief Checks for convergence of the H matrix.
+ *
+ * @param h_new New H matrix.
+ * @param h_old Previous H matrix.
+ * @param n Number of rows.
+ * @param k Number of columns.
+ * @return 1 if  if converged, 0 otherwise.
+ */
 static int check_convergence(const double *h_new, const double *h_old, int n, int k){
     int i, j;
     double sum = 0.0;
@@ -49,6 +76,14 @@ static int check_convergence(const double *h_new, const double *h_old, int n, in
     return sum < EPSILON;
 }
 
+/**
+ * @brief Calculates the matrix product Hᵀ*H*H.
+ *
+ * @param mat Input matrix.
+ * @param n Number of rows.
+ * @param k Number of columns.
+ * @return A pointer to the  product matrix, or NULL if memory allocation fails.
+ */
 static double *mult_transpose(const double *mat, int n, int k){
     double *transpose, *res, *temp;
     transpose = transpose_matrix(mat, n, k);
@@ -64,6 +99,15 @@ static double *mult_transpose(const double *mat, int n, int k){
     return res;
 }
 
+/**
+ * @brief Creates a new H matrix using the iterative update rule.
+ *
+ * @param old_h Previous H matrix.
+ * @param w_matrix  Norm matrix.
+ * @param n Number of rows.
+ * @param k Number of columns.
+ * @return A pointer to the new H matrix, or NULL if memory allocation fails.
+ */
 static double *create_h_new(const double *old_h, const double *w_matrix, int n, int k){
     int i, j;
     double inside;
@@ -92,6 +136,15 @@ static double *create_h_new(const double *old_h, const double *w_matrix, int n, 
     return h_matrix;
 }
 
+/**
+ * @brief Iteratively updates the H matrix until convergence or max iterations are reached.
+ *
+ * @param h_matrix Initial H matrix.
+ * @param w_matrix Norm matrix.
+ * @param n Number of rows.
+ * @param k Number of columns.
+ * @return The converged H matrix, or NULL if memory allocation fails.
+ */
 double *converge_h(double *h_matrix, const double *w_matrix, int n, int k){
     int i, res;
     double *old_h;
@@ -109,6 +162,14 @@ double *converge_h(double *h_matrix, const double *w_matrix, int n, int k){
     return h_matrix;
 }
 
+/**
+ * @brief Builds the normalized similarity matrix W.
+ *
+ * @param d_matrix Diagonal Degree matrix.
+ * @param a_matrix Similarity matrix.
+ * @param n Number of data points.
+ * @return A pointer to the norm matrix, or NULL if memory allocation fails.
+ */
 double *build_w(const double *d_matrix, const double *a_matrix, int n){
     int i,j;
     double d_i, d_j;
@@ -124,6 +185,14 @@ double *build_w(const double *d_matrix, const double *a_matrix, int n){
     return w;
 }
 
+/**
+ * @brief Computes the similarity value between two data points.
+ *
+ * @param point1 First point.
+ * @param point2 Second point.
+ * @param d Dimension of the points.
+ * @return The value for the similarity matrix entry.
+ */
 static double sym_val(const double *point1, const double *point2, int d){   
     int i;
     double e_exponent=0.0, sum=0.0;
@@ -137,7 +206,14 @@ static double sym_val(const double *point1, const double *point2, int d){
     return (exp(e_exponent));
 }
 
-/*p=flattened 1D arr of size n*d (n points, of dim d each)*/
+/**
+ * @brief Builds the similarity matrix A.
+ *
+ * @param p_matrix Flattened 1D array of size N*d of the data points.
+ * @param n Number of data points.
+ * @param d Dimension of the data points.
+ * @return A pointer to the similarity matrix, or NULL if memory allocation fails.
+ */
 double *build_a(const double *p_matrix, int n, int d){
     int i, j;
     double sym_v;
@@ -155,6 +231,13 @@ double *build_a(const double *p_matrix, int n, int d){
     
 }
 
+/**
+ * @brief Builds the diagonal degree matrix D (diagonal, size n).
+ *
+ * @param a_matrix The similarity matrix.
+ * @param n Number of data points.
+ * @return A pointer to a 1D array of the diagonal elements of D, or NULL if memory allocation fails.
+ */
 double *build_d(const double *a_matrix, int n)
 {
     int i, j;
@@ -194,6 +277,13 @@ static double *calc_mat(double *p_matrix, int n, int d, char *goal){
     return w_mat;
 }
 
+/**
+ * @brief Print matrix to standard output.
+ *
+ * @param mat Matrix to be printed (as flattened 1D array).
+ * @param numRows Number of rows.
+ * @param numCols Number of columns.
+ */
 static void print_matrix(double *mat, int numRows, int numCols){
     int i, j;
     for(i=0; i<numRows;i++){
@@ -208,6 +298,11 @@ static void print_matrix(double *mat, int numRows, int numCols){
     }
 }
 
+/**
+ * @brief Prints the Diagonal Degree matrix given its diagonal elements.
+ * @param d_mat A 1D array containing the diagonal elements of D.
+ * @param n Number of data points.
+ */
 static void print_d(double *d_mat, int n){
     int i, j;
     for(i=0; i<n;i++){
@@ -220,6 +315,13 @@ static void print_d(double *d_mat, int n){
     }
 }
 
+/**
+ * @brief Parse input file to determine number of points and their dimensions.
+ *
+ * @param fp File pointer to the input data file.
+ * @param n Pointer to an integer where the number of data points will be stored.
+ * @param d Pointer to an integer where the dimension of the data points will be stored.
+ */
 static void get_n_d(FILE *fp, int *n, int *d){
     int firstline=1;
     double p;
@@ -237,6 +339,14 @@ static void get_n_d(FILE *fp, int *n, int *d){
     }
 }
 
+/**
+ * @brief Reads data points from a file into a matrix.
+ *
+ * @param fp File pointer to the input data file.
+ * @param n Number of data points to read.
+ * @param d Dimension of the data points to read.
+ * @return A pointer to the matrix of data points, or NULL if memory allocation or file reading fails.
+ */
 static double *read_from_file(FILE *fp, int n, int d){
     double *p_matrix;
     int i, j;
