@@ -179,7 +179,7 @@ double *build_w(const double *d_matrix, const double *a_matrix, int n){
         d_i = d_matrix[i] != 0.0 ? 1.0/sqrt(d_matrix[i]) : 0.0;
         for(j=0;j<n;j++){
             d_j = d_matrix[j] != 0.0 ? 1.0/sqrt(d_matrix[j]) : 0.0;
-            w[(i*n)+j] = d_i*a_matrix[i*n+j]*d_j; /*smart matrix multiplication of symatric and diagonal matrices*/
+            w[(i*n)+j] = d_i*a_matrix[i*n+j]*d_j; /*smart matrix multiplication of symmetric and diagonal matrices*/
         }
     }
     return w;
