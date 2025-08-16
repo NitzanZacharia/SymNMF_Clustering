@@ -25,7 +25,7 @@ def init_h(n, k, m):
 
 def m_val(norm_matrix):
     """
-    Returns the mean value of a norm matrix.
+    Returns the mean value of the norm matrix.
 
     Args: 
         norm_matrix (numpy.ndarray): Norm matrix. 

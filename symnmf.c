@@ -63,7 +63,7 @@ static double *mat_mult(const double *matA, const double *matB, int rowsA, int c
  * @param h_old Previous H matrix.
  * @param n Number of rows.
  * @param k Number of columns.
- * @return 1 if  if converged, 0 otherwise.
+ * @return 1 iff converged, 0 otherwise.
  */
 static int check_convergence(const double *h_new, const double *h_old, int n, int k){
     int i, j;
@@ -77,7 +77,7 @@ static int check_convergence(const double *h_new, const double *h_old, int n, in
 }
 
 /**
- * @brief Calculates the matrix product Hᵀ*H*H.
+ * @brief Calculates the matrix product H*Hᵀ*H.
  *
  * @param mat Input matrix.
  * @param n Number of rows.
@@ -104,8 +104,8 @@ static double *mult_transpose(const double *mat, int n, int k){
  *
  * @param old_h Previous H matrix.
  * @param w_matrix  Norm matrix.
- * @param n Number of rows.
- * @param k Number of columns.
+ * @param n Number of rows (& columns in the norm matrix).
+ * @param k Number of columns in H.
  * @return A pointer to the new H matrix, or NULL if memory allocation fails.
  */
 static double *create_h_new(const double *old_h, const double *w_matrix, int n, int k){
@@ -125,9 +125,9 @@ static double *create_h_new(const double *old_h, const double *w_matrix, int n, 
         free(mone);
         return NULL;
     }
-    for(i=0; i<n; i++){
+    for(i=0; i<n; i++){ /*calc the new H matrix based on the numerator and denominator calculated before, and BETA.*/
         for(j=0; j<k; j++){
-            inside = (mone[(i*k) + j])/(mehane[(i*k) + j] + SMALL_NUMBER);
+            inside = (mone[(i*k) + j])/(mehane[(i*k) + j] + SMALL_NUMBER); /*SMALL_NUMBER is used to make sure no division by zero is done.*/
             h_matrix[(i*k) + j] = old_h[(i*k) + j]*((1.0-BETA)+(BETA*inside));
         }
     }
@@ -141,8 +141,8 @@ static double *create_h_new(const double *old_h, const double *w_matrix, int n, 
  *
  * @param h_matrix Initial H matrix.
  * @param w_matrix Norm matrix.
- * @param n Number of rows.
- * @param k Number of columns.
+ * @param n Number of rows (& columns in the norm matrix).
+ * @param k Number of columns in H.
  * @return The converged H matrix, or NULL if memory allocation fails.
  */
 double *converge_h(double *h_matrix, const double *w_matrix, int n, int k){
@@ -179,7 +179,7 @@ double *build_w(const double *d_matrix, const double *a_matrix, int n){
         d_i = d_matrix[i] != 0.0 ? 1.0/sqrt(d_matrix[i]) : 0.0;
         for(j=0;j<n;j++){
             d_j = d_matrix[j] != 0.0 ? 1.0/sqrt(d_matrix[j]) : 0.0;
-            w[(i*n)+j] = d_i*a_matrix[i*n+j]*d_j;
+            w[(i*n)+j] = d_i*a_matrix[i*n+j]*d_j; /*smart matrix multiplication of symatric and diagonal matrices*/
         }
     }
     return w;
@@ -209,7 +209,7 @@ static double sym_val(const double *point1, const double *point2, int d){
 /**
  * @brief Builds the similarity matrix A.
  *
- * @param p_matrix Flattened 1D array of size N*d of the data points.
+ * @param p_matrix Flattened 1D array of size n*d of the data points.
  * @param n Number of data points.
  * @param d Dimension of the data points.
  * @return A pointer to the similarity matrix, or NULL if memory allocation fails.
@@ -220,7 +220,7 @@ double *build_a(const double *p_matrix, int n, int d){
     double *a = malloc((size_t)n*n*sizeof(double));
     if(!a) return NULL;
     for(i=0; i<n;i++){
-        for(j=0;j<i;j++){ /*calc sym v only under the diag*/
+        for(j=0;j<i;j++){ /*calc sym value only under the diag*/
             sym_v = sym_val(&p_matrix[i * d], &p_matrix[j * d], d); 
             a[(i*n) + j] = sym_v; 
             a[(j*n) + i] = sym_v; /*a is symmetric*/
@@ -238,8 +238,7 @@ double *build_a(const double *p_matrix, int n, int d){
  * @param n Number of data points.
  * @return A pointer to a 1D array of the diagonal elements of D, or NULL if memory allocation fails.
  */
-double *build_d(const double *a_matrix, int n)
-{
+double *build_d(const double *a_matrix, int n){
     int i, j;
     double d_i;
     double *d = malloc((size_t)n*sizeof(double));
@@ -254,8 +253,20 @@ double *build_d(const double *a_matrix, int n)
     return d;
 }
 
-/* #define BUILD_STANDALONE*/
+/**All functions responsible for running the file as a standalone.
+ * when compiling, need to use -DBUILD_STANDALONE to make sure it's included
+*/
 #ifdef BUILD_STANDALONE
+
+/**
+ * @brief Compute a matrix on input data based on the specified goal.
+ *
+ * @param p_matrix Pointer to a flattened matrix of size n*d.
+ * @param n Number of data points.
+ * @param d Dimension of the data points.
+ * @param goal A string indicating the matrix to compute: "sym", "ddg", or "norm".
+ * @return Pointer to the resulting matrix (flattened), or NULL if memory allocation fails.
+ */
 static double *calc_mat(double *p_matrix, int n, int d, char *goal){
     double *a_mat, *d_mat, *w_mat;
     a_mat = build_a(p_matrix, n, d);
@@ -340,12 +351,12 @@ static void get_n_d(FILE *fp, int *n, int *d){
 }
 
 /**
- * @brief Reads data points from a file into a matrix.
+ * @brief Reads data points from a file into a flat matrix.
  *
  * @param fp File pointer to the input data file.
  * @param n Number of data points to read.
  * @param d Dimension of the data points to read.
- * @return A pointer to the matrix of data points, or NULL if memory allocation or file reading fails.
+ * @return A pointer to the flat matrix of data points, or NULL if memory allocation or file reading fails.
  */
 static double *read_from_file(FILE *fp, int n, int d){
     double *p_matrix;
@@ -373,7 +384,7 @@ int main(int argc, char **argv){
     fp = fopen(argv[2], "r");
     if(!fp) goto error_case;
     get_n_d(fp, &n, &d);
-    rewind(fp);
+    rewind(fp); /*make sure we start reading from the beginning of the file*/
     p_mat = read_from_file(fp, n, d);
     if(!p_mat) goto error_case;
     end_mat = calc_mat(p_mat, n, d, argv[1]);

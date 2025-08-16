@@ -5,7 +5,8 @@ import symnmf
 from kmeanshw1 import final_clusters
 from sklearn.metrics import silhouette_score
 
-#gets file name, returns a tuple of (X, n, d) when X=2D numpy array of data points, n = num of points, d = dim of points
+#gets file name, returns a tuple of (X, n) when X=2D numpy array of data points, 
+# n = num of points
 def get_points(f_name): 
     """
     Load data points from input file.
@@ -16,13 +17,11 @@ def get_points(f_name):
     Returns:
             points (numpy.ndarray): 2D array of shape (n, d) with the read data points.
             num_p (int): Number of data points (rows).
-            dim_p (int): Dimension of each data point (columns).
     """
     dfp = pd.read_csv(f_name, header=None)
     points= dfp.to_numpy()
     num_p = points.shape[0]
-    dim_p = points.shape[1]
-    return points, num_p, dim_p
+    return points, num_p
 
 
 def get_sym_culsters(goal, points_arr, n, k): 
@@ -50,10 +49,14 @@ def main():
         goal = "symnmf"
         k = int(args[1])
         filename = args[2]
-        X, n, d = get_points(filename)
+        X, n= get_points(filename)
         Y_sym = get_sym_culsters(goal, X, n, k)
+
+        # Calculate silhouette scores for SymNMF clustering
         sym_s_score = silhouette_score(X, Y_sym)
         Y_kmeans = final_clusters(X, k)
+
+        # Calculate silhouette scores for KMeans clustering
         kmeans_s_score = silhouette_score(X, Y_kmeans)
         print(f"nmf: {sym_s_score:.4f}")
         print(f"kmeans: {kmeans_s_score:.4f}")
