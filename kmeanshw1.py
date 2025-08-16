@@ -47,7 +47,7 @@ def update_center(clusters):
         centers.append(up_center)
     return centers    
 
-#returns a tuple of clusters, clusts_id= list of indexes of the clusters each point was assigned to
+#returns a tuple of clusters, clusts_ind= list of indexes of the clusters each point was assigned to
 #given the current centroids and the points, sorts the points
 #to their closest centroid 
 def sort_points(points, centroids):
