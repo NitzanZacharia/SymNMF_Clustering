@@ -24,7 +24,7 @@ def get_points(f_name):
     dim_p = points.shape[1]
     return points, num_p, dim_p
 
-#gets goal="symnmf", n=num points, k=num clusts, points_arr=2D numpy array of the points, returns 1D vector so that cluster_ind[i] = cluster num (in range(0,k)) point i was assigned to 
+
 def get_sym_culsters(goal, points_arr, n, k): 
     """
     Run SymNMF clustering and return cluster assignments vector.
@@ -39,9 +39,9 @@ def get_sym_culsters(goal, points_arr, n, k):
         numpy.ndarray: 1D array of length n where the i-th entry is the cluster assignment index of the i-th point.
     """
     points = points_arr.tolist()
-    res = symnmf.ex_funcs(goal, points, n, k) #gets final H as nested list
+    res = symnmf.ex_funcs(goal, points, n, k)
     res_arr = np.array(res, dtype=float)
-    cluster_ind = np.argmax(res_arr, axis=1) #since point that is row i match cluster in col j (in H) where H_ij is maximal
+    cluster_ind = np.argmax(res_arr, axis=1)
     return cluster_ind
 
 def main():
