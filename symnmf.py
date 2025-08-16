@@ -6,6 +6,17 @@ import symnmf_c as symnmf
 np.random.seed(1234)
 
 def init_h(n, k, m):
+    """
+    Initialize the H matrix.
+
+    Args:
+        n (int): Number of data points (rows).
+        k (int): Number of clusters (columns).
+        m (float): Mean value of the norm matrix.
+
+    Returns:
+        numpy.ndarray: Randomly initialized H matrix of shape (n, k).
+    """
     return np.random.uniform(
         low=0.0,
         high=2 * np.sqrt(m/k),
@@ -13,11 +24,32 @@ def init_h(n, k, m):
     )
 
 def m_val(norm_matrix):
+    """
+    Returns the mean value of a norm matrix.
+
+    Args: 
+        norm_matrix (numpy.ndarray): Norm matrix. 
+
+    Returns: 
+        float: Mean of norm_matrix.
+    """        
     m = np.mean(norm_matrix)
     return m
  
-def ex_funcs(str, p_matrix, n, k):
-    match str:
+def ex_funcs(goal_str, p_matrix, n, k):
+    """
+    Returns a matrix based on requested operation.
+
+    Args: 
+        goal_str (str): Type of matrix to compute based on user's input.
+        p_matrix (list[list[float]]): Input points array.
+        n (int): Number of data points. 
+        k (int): Number of clusters.
+
+    Returns: 
+        list[list[float]]: requested matrix.
+    """        
+    match goal_str:
         case "sym":
             a_mat = symnmf.sym(p_matrix)
             return a_mat
@@ -36,6 +68,16 @@ def ex_funcs(str, p_matrix, n, k):
             return h_mat 
 
 def print_d(mat, n):
+    """
+    Print the Diagonal Degree matrix given its diagonal values.
+
+    Args: 
+        mat (np.ndarray): 1D array of Diagonal values.
+        n (int): Number of data points.
+
+    Returns: 
+        None
+    """        
     for i in range(n):
         for j in range(n):
             if i == j:
