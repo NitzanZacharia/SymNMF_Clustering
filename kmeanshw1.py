@@ -6,6 +6,16 @@ e = 0.001
 
 #calculates the distance between two points
 def getDistance(point1, point2):
+    """
+    Compute Euclidean distance between two points.
+
+    Args:
+        point1 (list[float]): First point.
+        point2 (list[float]): Second point.
+
+    Returns:
+        float: Euclidean distance.
+    """
     d = len(point1)
     dist = 0
     for i in range(d):
@@ -15,6 +25,15 @@ def getDistance(point1, point2):
 
 #updates the centroids after we insert all points       
 def update_center(clusters):
+    """
+    Compute new centroids after we insert all points.
+
+    Args:
+        clusters (list[list[list[float]]]): List of clusters, each has a list of points.
+
+    Returns:
+        list[list[float]]: Updated centroids.
+    """
     d = len(clusters[0][0])
     centers = []
     for cluster in clusters:
@@ -31,6 +50,17 @@ def update_center(clusters):
 #given the current centroids and the points, sorts the points
 #to their closest centroid 
 def sort_points(points, centroids):
+    """
+    Sorts points to nearest centroid.
+
+    Args:
+        points (list[list[float]]): Input points.
+        centroids (list[list[float]]): Current centroids.
+
+    Returns:
+            clusters (list[list[list[float]]]): Points grouped by nearest centroid.
+            clusts_ind (list[int]): List of indexes of the clusters each point was assigned to.
+    """
     clusters = [[] for i in range(len(centroids))]
     clusts_ind = [] 
     for p_ind in range(len(points)): 
@@ -49,6 +79,16 @@ def sort_points(points, centroids):
 
 #checks if the centroids converged enough
 def e_convergence(prev_ctr, up_ctr):
+     """
+    Check if centroids converged.
+
+    Args:
+        prev_ctr (list[list[float]]): Previous centroids.
+        up_ctr (list[list[float]]): Updated centroids.
+
+    Returns:
+        bool: True if converged, False otherwise.
+    """
     for i in range(len(prev_ctr)):
         if(getDistance(prev_ctr[i],up_ctr[i]))>=e:
             return False
@@ -56,11 +96,26 @@ def e_convergence(prev_ctr, up_ctr):
 
 #when the sorting is done, print to the screen
 def print_centroids(centroids):
+    """
+    Print centroids in formatted output.
+
+    Args:
+        centroids (list[list[float]]): Centroids to print.
+    """
     for centroid in centroids:
         print(",".join(f"{x:.4f}" for x in centroid))  
 
 #create points from stdin
 def create_points(input_data):
+    """
+    Parse input data into points.
+
+    Args:
+        input_data (list[str]): Input lines, each a comma-separated point.
+
+    Returns:
+        list[list[float]]: List of the data points.
+    """
     points = []
     for line in input_data:
         numbers = [float(x) for x in line.strip().split(',')]
@@ -69,6 +124,17 @@ def create_points(input_data):
 
 #validates input
 def check_validation(k, n ,iter):
+    """
+    Validate input.
+
+    Args:
+        k (str): Number of clusters.
+        n (int): Number of points.
+        iter (str): Number of iterations.
+
+    Returns:
+        bool: True if valid, False otherwise.
+    """
     try:
         knum = float(k)
         if ((not knum.is_integer()) or knum>=n or knum<2):
@@ -88,6 +154,16 @@ def check_validation(k, n ,iter):
     return True
 
 def final_clusters(points_arr, k):
+    """
+    Cluster the data points into k clusters until convergence.
+
+    Args:
+        points_arr (numpy.ndarray): Input points as NumPy array.
+        k (int): Number of clusters.
+
+    Returns:
+        numpy.ndarray: Cluster indices each point was assigned to.
+    """
     points = points_arr.tolist()
     centroids = [points[i] for i in range(k)]
     for i in range(300): #default iter is 300
