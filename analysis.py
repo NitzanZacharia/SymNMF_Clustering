@@ -7,6 +7,17 @@ from sklearn.metrics import silhouette_score
 
 #gets file name, returns a tuple of (X, n, d) when X=2D numpy array of data points, n = num of points, d = dim of points
 def get_points(f_name): 
+    """
+    Load data points from input file.
+
+    Args:
+        f_name (str): name of the file containing the data points.
+
+    Returns:
+            points (numpy.ndarray): 2D array of shape (n, d) with the read data points.
+            num_p (int): Number of data points (rows).
+            dim_p (int): Dimension of each data point (columns).
+    """
     dfp = pd.read_csv(f_name, header=None)
     points= dfp.to_numpy()
     num_p = points.shape[0]
@@ -15,6 +26,18 @@ def get_points(f_name):
 
 #gets goal="symnmf", n=num points, k=num clusts, points_arr=2D numpy array of the points, returns 1D vector so that cluster_ind[i] = cluster num (in range(0,k)) point i was assigned to 
 def get_sym_culsters(goal, points_arr, n, k): 
+    """
+    Run SymNMF clustering and return cluster assignments vector.
+
+    Args:
+        goal (str): Clustering goal ("symnmf").
+        points_arr (numpy.ndarray): 2D array of shape (n, d) with input data points.
+        n (int): Number of data points.
+        k (int): Number of clusters.
+
+    Returns:
+        numpy.ndarray: 1D array of length n where the i-th entry is the cluster assignment index of the i-th point.
+    """
     points = points_arr.tolist()
     res = symnmf.ex_funcs(goal, points, n, k) #gets final H as nested list
     res_arr = np.array(res, dtype=float)
