@@ -41,7 +41,7 @@ SoftwareProj-Project/
 ├── setup.py              # Python package configuration
 ├── analysis.py           # Benchmarking: SymNMF vs K-Means with silhouette scores
 ├── kmeanshw1.py          # K-Means clustering implementation (for comparison)
-├── chat_verifier.py      # Reference implementation for testing/verification
+├── verifier.py      # Reference implementation for testing/verification
 ├── tester.py             # Comprehensive test harness with multiple dataset generators
 ├── Makefile              # Build configuration for C components
 ├── Prev_final_100/       # Previous iterations and backup implementations
@@ -56,7 +56,7 @@ SoftwareProj-Project/
 | `symnmfmodule.c` | CPython extension glue code exposing C functions to Python |
 | `symnmf.py` | High-level Python API wrapping C functions; implements main script entry point |
 | `analysis.py` | Compares SymNMF and K-Means clustering quality using silhouette scores |
-| `chat_verifier.py` | Pure-Python reference implementation for validation |
+| `verifier.py` | Pure-Python reference implementation for validation |
 | `tester.py` | Automated testing with synthetic datasets (Gaussians, rings, slabs, etc.) |
 | `kmeanshw1.py` | K-Means clustering for baseline comparison |
 
@@ -102,7 +102,7 @@ pip install numpy pandas scikit-learn
 python tester.py
 
 # Or run the reference verifier
-python chat_verifier.py 3 symnmf test_data.csv
+python verifier.py 3 symnmf test_data.csv
 ```
 
 ---
