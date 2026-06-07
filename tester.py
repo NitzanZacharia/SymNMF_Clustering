@@ -5,7 +5,7 @@ Run-and-generate test harness for SymNMF project.
 - (Re)creates ./tests with random datasets (varied n & d, many shapes)
 - Runs & compares:
     1) symnmf.py            (as a script; avoids C-extension import clash)
-    2) chat_verifier.py     (Python reference)
+    2) verifier.py     (Python reference)
     3) ./symnmf CLI         (for goals {sym, ddg, norm} ONLY; NO symnmf goal)
 - For symnmf: compares (1) vs (2) for multiple, diverse integer k values (2 <= k < n).
 - A CASE FAILS if any required program is missing, errors, times out, or mismatches.
