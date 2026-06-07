@@ -372,9 +372,9 @@ LFLAGS = -lm  # Link math library
 
 | Feature | SymNMF | K-Means |
 |---------|--------|---------|
-| **Cluster Shape** | Non-convex ✓ | Convex only |
+| **Cluster Shape** | Non-convex  | Convex only |
 | **Soft/Hard Assignment** | Soft (probabilistic) | Hard (discrete) |
-| **Initialization Sensitivity** | Low ✓ | High |
+| **Initialization Sensitivity** | Low  | High |
 | **Scalability** | O(n²) | O(nk) |
 | **Best For** | Complex, manifold data | Well-separated spheres |
 | **Implementation** | C + Python | Python |
