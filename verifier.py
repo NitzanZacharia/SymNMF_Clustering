@@ -1,12 +1,12 @@
 import sys, math
 import numpy as np
 
-# ---- constants from your C code ----
+# ---- constants from C code ----
 BETA = 0.5
 EPSILON = 1e-4
 SMALL_NUMBER = 1e-13
 MAX_ITER = 300
-np.random.seed(1234)  # same as in your Python wrapper
+np.random.seed(1234)  # same as Python wrapper
 
 def read_points(path):
     X = np.loadtxt(path, delimiter=",", dtype=float)
