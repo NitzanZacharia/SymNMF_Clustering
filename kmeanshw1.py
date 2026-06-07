@@ -3,7 +3,7 @@ import numpy as np
 
 EPSILON = 1e-4
 
-#All code from HW1 which was irrelevant was removed
+
 
 #calculates the distance between two points
 def getDistance(point1, point2):
