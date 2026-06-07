@@ -1,4 +1,4 @@
-# SymNMF Clustering (C & Python)
+# SymNMF Clustering
 
 A high-performance hybrid implementation of **Symmetric Non-negative Matrix Factorization** for data clustering, combining optimized C code for computationally intensive operations with Python for data analysis and scripting.
 
@@ -25,7 +25,7 @@ This project implements SymNMF by combining:
 - [Usage](#usage)
 - [Algorithm Details](#algorithm-details)
 - [Performance](#performance)
-- [Future improvements](#future-improvementsg)
+- [Future improvements](#future-improvements)
 - [License](#license)
 
 ---
