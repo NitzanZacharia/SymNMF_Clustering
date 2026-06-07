@@ -2,7 +2,7 @@
 
 A high-performance hybrid implementation of **Symmetric Non-negative Matrix Factorization** for data clustering, combining optimized C code for computationally intensive operations with Python for data analysis and scripting.
 
-## 🎯 Overview
+## Overview
 
 Symmetric Non-negative Matrix Factorization (SymNMF) is a powerful clustering technique that factorizes a symmetric affinity matrix into lower-rank factors. This approach is particularly effective for discovering natural groupings in complex, high-dimensional datasets.
 
@@ -18,7 +18,7 @@ This project implements SymNMF by combining:
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Project Structure](#project-structure)
 - [Installation](#installation)
@@ -31,7 +31,7 @@ This project implements SymNMF by combining:
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 SoftwareProj-Project/
@@ -63,7 +63,7 @@ SoftwareProj-Project/
 
 ---
 
-## ⚙️ Installation
+##  Installation
 
 ### Requirements
 
@@ -108,7 +108,7 @@ python chat_verifier.py 3 symnmf test_data.csv
 
 ---
 
-## 📖 Usage
+##  Usage
 
 ### Command-Line Interface
 
@@ -209,7 +209,7 @@ CSV file with one data point per row, comma-separated values (no header):
 
 ---
 
-## 🧮 Algorithm Details
+##  Algorithm Details
 
 ### SymNMF Steps
 
@@ -249,7 +249,7 @@ CSV file with one data point per row, comma-separated values (no header):
 
 ---
 
-## ⚡ Performance
+##  Performance
 
 ### Benchmarks
 
@@ -295,7 +295,7 @@ python analysis.py 5 your_data.csv
 
 ---
 
-## 🧪 Testing
+##  Testing
 
 ### Automated Test Suite
 
@@ -369,7 +369,7 @@ LFLAGS = -lm  # Link math library
 
 ---
 
-## 📊 Comparison: SymNMF vs K-Means
+##  Comparison: SymNMF vs K-Means
 
 | Feature | SymNMF | K-Means |
 |---------|--------|---------|
@@ -382,9 +382,9 @@ LFLAGS = -lm  # Link math library
 
 ---
 
-## 🤝 Contributing
+##  Future improvements:
 
-Contributions are welcome! Areas for improvement:
+Areas for improvement:
 - Optimization for large-scale datasets (n > 10k)
 - GPU acceleration (CUDA/OpenCL)
 - Additional distance metrics (cosine, Manhattan)
@@ -400,29 +400,10 @@ Contributions are welcome! Areas for improvement:
 
 ---
 
-## 📜 License
+##  License
 
 This project is provided as-is for educational and research purposes.
 
 ---
 
-## 📧 Contact
 
-**Author:** Nitzan Zacharia
-
-**Repository:** [NitzanZacharia/SoftwareProj-Project](https://github.com/NitzanZacharia/SoftwareProj-Project)
-
-For questions or issues, please open a GitHub issue or contact the author.
-
----
-
-## 📚 References
-
-- Lee, D. D., & Seung, H. S. (2001). "Algorithms for non-negative matrix factorization." *Advances in neural information processing systems*, 13.
-- Kuang, D., Park, H., & Ding, C. (2012). "Symmetric nonnegative matrix factorization for graph clustering." *Proceedings of the SIAM International Conference on Data Mining*.
-- Ng, A. Y., Jordan, M. I., & Weiss, Y. (2002). "On spectral clustering: Analysis and an algorithm." *Advances in neural information processing systems*, 14.
-
----
-
-**Last Updated:** June 2026  
-**Version:** 1.0
