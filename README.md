@@ -25,9 +25,8 @@ This project implements SymNMF by combining:
 - [Usage](#usage)
 - [Algorithm Details](#algorithm-details)
 - [Performance](#performance)
-- [Contributing](#contributing)
+- [Future improvements](#future-improvementsg)
 - [License](#license)
-- [Contact](#contact)
 
 ---
 
@@ -339,7 +338,7 @@ diff symnmf_result.txt verifier_result.txt
 
 ---
 
-## 🔨 Build Instructions
+##  Build Instructions
 
 ### Compile Standalone C Binary
 
